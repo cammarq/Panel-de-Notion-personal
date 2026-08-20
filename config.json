@@ -1,0 +1,41 @@
+{
+  "notion_token": "",
+  "notion_version": "2022-06-28",
+  "titulo": "Panel personal — Edgar",
+  "zona_horaria": "America/Mexico_City",
+  "archivo_salida": "index.html",
+  "publicar_siempre": false,
+
+  "tareas": {
+    "database_id": "1230c7c95118818aa51ac40d865f86ab",
+    "excluir_estados": ["Done"],
+    "solo_incluir": null,
+    "props": {
+      "estado": "Status",
+      "eisenhower": "Status",
+      "prioridad": "Prioridad",
+      "contexto": "Contexto",
+      "personas": "Encargado",
+      "fecha": "Fecha de alerta",
+      "proyecto": "P.A.R.A."
+    },
+    "mapa_prioridad": {
+      "Prioridad alta": "alta",
+      "Prioridad media": "media",
+      "Prioridad baja": "baja"
+    }
+  },
+
+  "proyectos": {
+    "database_id": "1230c7c9511881d8aa1ad97329e4aaa4",
+    "excluir_estados": ["LISTO"],
+    "solo_incluir": {
+      "propiedad": "Categoría P.A.R.A.",
+      "valores": ["Proyectos"]
+    },
+    "props": {
+      "estado": "Estado",
+      "entrega": "Fecha de Entrega"
+    }
+  }
+}

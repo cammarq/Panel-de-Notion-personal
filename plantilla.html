@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITULO__</title>
+<style>
+  :root{
+    color-scheme: light;
+    --plane:#f9f9f7; --surface:#fcfcfb;
+    --ink:#0b0b0b; --ink2:#52514e; --muted:#898781;
+    --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,0.10);
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+    --good:#0ca30c; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b;
+    --seq-200:#9ec5f4; --seq-450:#2a78d6; --seq-600:#184f95;
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --plane:#0d0d0d; --surface:#1a1a19;
+    --ink:#ffffff; --ink2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,0.10);
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --good:#0ca30c; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b;
+    --seq-200:#184f95; --seq-450:#3987e5; --seq-600:#86b6ef;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--plane); color:var(--ink);
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:24px 20px 64px}
+
+  /* ---------- header ---------- */
+  header.top{display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; justify-content:space-between; margin-bottom:20px}
+  h1{font-size:22px; margin:0 0 4px; letter-spacing:-0.01em}
+  .sub{color:var(--ink2); font-size:13px; margin:0}
+  .clockbox{text-align:right; display:flex; align-items:center; gap:12px}
+  .clock{font-size:26px; font-variant-numeric:tabular-nums; letter-spacing:-0.02em; line-height:1}
+  .clockday{font-size:12px; color:var(--muted)}
+  .clockday::first-letter{text-transform:uppercase}
+  .tbtn{background:var(--surface); border:1px solid var(--ring); color:var(--ink2);
+    border-radius:8px; padding:7px 11px; cursor:pointer; font-size:12px; font-family:inherit}
+  .tbtn:hover{border-color:var(--axis)}
+
+  .livedot{display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--good);
+    margin-right:6px; vertical-align:middle; animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+  /* ---------- tiles ---------- */
+  .tiles{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:22px}
+  .tile{background:var(--surface); border:1px solid var(--ring); border-radius:12px; padding:14px 16px}
+  .tile .lab{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); display:flex; align-items:center; gap:6px}
+  .tile .val{font-size:34px; line-height:1.05; margin-top:6px; letter-spacing:-0.02em}
+  .tile .foot{font-size:12px; color:var(--ink2); margin-top:2px}
+  .dotc{width:8px;height:8px;border-radius:50%;display:inline-block}
+
+  /* ---------- panels ---------- */
+  .panels{display:grid; grid-template-columns:1.15fr 1fr; gap:16px; align-items:start}
+  @media (max-width:900px){.panels{grid-template-columns:1fr} .tiles{grid-template-columns:repeat(2,1fr)}}
+  .panel{background:var(--surface); border:1px solid var(--ring); border-radius:12px; padding:16px 16px 8px}
+  .phead{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:2px}
+  .phead h2{font-size:15px; margin:0; letter-spacing:-0.01em}
+  .src{font-size:11px; color:var(--muted)}
+  .src a{color:var(--muted)}
+  .pnote{font-size:12px; color:var(--ink2); margin:2px 0 12px}
+
+  /* filters */
+  .filters{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px}
+  .fbtn{background:transparent; border:1px solid var(--ring); color:var(--ink2); border-radius:999px;
+    padding:5px 11px; font-size:12px; cursor:pointer; font-family:inherit; white-space:nowrap}
+  .fbtn:hover{background:var(--plane)}
+  .fbtn[aria-pressed="true"]{background:var(--ink); color:var(--surface); border-color:var(--ink)}
+  .fbtn .n{opacity:.6; margin-left:5px; font-variant-numeric:tabular-nums}
+
+  /* task rows */
+  ul.tasks{list-style:none; margin:0; padding:0 4px 0 0; max-height:640px; overflow:auto}
+  li.task{display:grid; grid-template-columns:4px 1fr auto; gap:10px; align-items:start;
+    padding:9px 0; border-bottom:1px solid var(--grid)}
+  li.task:last-child{border-bottom:none}
+  .bar{width:4px; border-radius:2px; align-self:stretch; min-height:22px; background:var(--axis)}
+  .t-title{font-size:13.5px; color:var(--ink); text-decoration:none; display:block}
+  .t-title:hover{text-decoration:underline}
+  .t-meta{font-size:11.5px; color:var(--muted); margin-top:3px; display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+  .chip{border:1px solid var(--ring); border-radius:5px; padding:1px 6px; font-size:11px; color:var(--ink2)}
+  .who{font-size:11px; color:var(--ink2)}
+  .t-when{font-size:11.5px; font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; padding-top:1px}
+  .t-when b{display:block; font-weight:600}
+  .st-crit{color:var(--crit)} .st-warn{color:#8a6100} .st-ok{color:var(--ink2)} .st-none{color:var(--muted)}
+  :root[data-theme="dark"] .st-warn{color:var(--warn)}
+  .empty{color:var(--muted); font-size:13px; padding:18px 0}
+
+  /* chart */
+  .chart{margin:2px 0 12px}
+  .row{display:grid; grid-template-columns:130px 1fr 34px; gap:10px; align-items:center; padding:4px 0}
+  .row .name{font-size:12.5px; color:var(--ink2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .track{display:block; height:14px; background:var(--grid); border-radius:4px; overflow:hidden}
+  .fill{display:block; height:14px; min-width:4px; border-radius:0 4px 4px 0; background:var(--seq-450); transition:width .5s ease}
+  .row .num{font-size:12.5px; font-variant-numeric:tabular-nums; text-align:right; color:var(--ink)}
+  .row:hover .name{color:var(--ink)}
+
+  table.proj{width:100%; border-collapse:collapse; font-size:12.5px}
+  table.proj th{text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--muted); font-weight:500; padding:6px 6px 6px 0; border-bottom:1px solid var(--axis)}
+  table.proj td{padding:7px 6px 7px 0; border-bottom:1px solid var(--grid); vertical-align:middle}
+  table.proj tr:last-child td{border-bottom:none}
+  table.proj a{color:var(--ink); text-decoration:none}
+  table.proj a:hover{text-decoration:underline}
+  .badge{display:inline-flex; align-items:center; gap:5px; font-size:11px; color:var(--ink2); white-space:nowrap}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* sample strip */
+  .sample{margin-top:18px; border:1px dashed var(--axis); border-radius:12px; padding:14px 16px; background:transparent}
+  .sample-head{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px}
+  .tag-sample{font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    background:var(--warn); color:#3a2b00; border-radius:4px; padding:2px 7px}
+  .sample h2{font-size:14px; margin:0}
+  .sample p.why{font-size:12.5px; color:var(--ink2); margin:4px 0 14px}
+  .sgrid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+  @media (max-width:900px){.sgrid{grid-template-columns:1fr}}
+  .scard{border:1px solid var(--ring); border-radius:10px; padding:12px 14px; opacity:.72}
+  .scard h3{font-size:12px; margin:0 0 8px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted)}
+  .sitem{display:flex; gap:9px; padding:6px 0; border-bottom:1px solid var(--grid); font-size:12.5px}
+  .sitem:last-child{border-bottom:none}
+  .sitem .h{color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap}
+  footer.foot{margin-top:22px; font-size:11.5px; color:var(--muted); line-height:1.6}
+  code{font-family:ui-monospace,Menlo,monospace; font-size:11px; background:var(--plane); border:1px solid var(--ring); border-radius:4px; padding:1px 4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>__TITULO__</h1>
+      <p class="sub"><span class="livedot"></span><span id="syncline">Notion · sincronizado 19 ago 2026, 08:31 (CDMX)</span></p>
+    </div>
+    <div class="clockbox">
+      <div>
+        <div class="clock" id="clock">--:--:--</div>
+        <div class="clockday" id="today">—</div>
+      </div>
+      <button class="tbtn" id="themeBtn" type="button">Modo oscuro</button>
+    </div>
+  </header>
+
+  <section class="tiles" id="tiles"></section>
+
+  <div class="panels">
+
+    <!-- ============ TAREAS ============ -->
+    <section class="panel">
+      <div class="phead">
+        <h2>Tareas abiertas</h2>
+        <span class="src">Notion · <a href="__URL_DB_TAREAS__" target="_blank" rel="noopener">Tareas</a> · datos reales</span>
+      </div>
+      <p class="pnote">Todo lo que no está en <em>Done</em>. Los días de retraso se recalculan en el navegador, así que el conteo sigue siendo correcto aunque el panel no se regenere.</p>
+      <div class="filters" id="filters"></div>
+      <ul class="tasks" id="taskList"></ul>
+    </section>
+
+    <!-- ============ PROYECTOS ============ -->
+    <section class="panel">
+      <div class="phead">
+        <h2>Carga por proyecto</h2>
+        <span class="src">Notion · <a href="__URL_DB_PROYECTOS__" target="_blank" rel="noopener">P.A.R.A.</a> · datos reales</span>
+      </div>
+      <p class="pnote">Tareas abiertas asignadas a cada proyecto vivo (excluye <em>LISTO</em>).</p>
+      <div class="chart" id="chart"></div>
+      <table class="proj">
+        <thead><tr><th>Proyecto</th><th>Estado</th><th style="text-align:right">Abiertas</th><th>Entrega</th></tr></thead>
+        <tbody id="projBody"></tbody>
+      </table>
+      <div style="height:8px"></div>
+    </section>
+  </div>
+
+  <footer class="foot">
+    <div><strong>Cómo se mantiene actualizado.</strong> El reloj, los días de retraso y los contadores de vencidas/hoy se recalculan solos en el navegador cada minuto. Los datos de Notion se vuelven a leer y el panel se republica con la tarea programada diaria.</div>
+    <div id="stamp" style="margin-top:6px"></div>
+  </footer>
+</div>
+
+<script>
+/*__DATOS_NOTION__*/
+
+// ---------- helpers de fecha, todos anclados a la hora local de CDMX ----------
+function cdmxParts(date){
+  const f = new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"});
+  const [y,m,d] = f.format(date).split("-").map(Number);
+  return {y,m,d};
+}
+function dayIndex({y,m,d}){ return Math.floor(Date.UTC(y,m-1,d)/86400000); }
+function todayIndex(){ return dayIndex(cdmxParts(new Date())); }
+function taskDayIndex(task){
+  if(!task.d) return null;
+  if(task.dt) return dayIndex(cdmxParts(new Date(task.d)));      // datetime → día en CDMX
+  const [y,m,d] = task.d.slice(0,10).split("-").map(Number);      // fecha simple → tal cual
+  return Math.floor(Date.UTC(y,m-1,d)/86400000);
+}
+function bucketOf(task){
+  const di = taskDayIndex(task);
+  if(di===null) return "sinfecha";
+  const delta = di - todayIndex();
+  if(delta < 0)  return "vencida";
+  if(delta === 0) return "hoy";
+  if(delta <= 7) return "semana";
+  return "despues";
+}
+const fmtDay = new Intl.DateTimeFormat("es-MX",{timeZone:TZ,day:"numeric",month:"short"});
+const fmtTime = new Intl.DateTimeFormat("es-MX",{timeZone:TZ,hour:"2-digit",minute:"2-digit",hour12:false});
+
+function whenLabel(task){
+  const b = bucketOf(task);
+  if(b==="sinfecha") return {cls:"st-none", top:"sin fecha", bot:""};
+  const di = taskDayIndex(task), delta = di - todayIndex();
+  const dObj = task.dt ? new Date(task.d) : new Date(task.d+"T12:00:00Z");
+  const dayTxt = fmtDay.format(dObj) + (task.dt ? " · "+fmtTime.format(new Date(task.d)) : "");
+  if(delta < 0)  return {cls:"st-crit", top:(-delta)+(delta===-1?" día":" días")+" tarde", bot:dayTxt};
+  if(delta === 0) return {cls:"st-warn", top:"hoy", bot:dayTxt};
+  if(delta === 1) return {cls:"st-ok", top:"mañana", bot:dayTxt};
+  return {cls:"st-ok", top:"en "+delta+" días", bot:dayTxt};
+}
+const BARCOLOR = {vencida:"var(--crit)", hoy:"var(--warn)", semana:"var(--s1)", despues:"var(--axis)", sinfecha:"var(--axis)"};
+const PRIOLAB = {alta:"Prioridad alta", media:"Prioridad media", baja:"Prioridad baja"};
+
+// ---------- render: tiles ----------
+function counts(){
+  const c = {vencida:0,hoy:0,semana:0,despues:0,sinfecha:0};
+  TASKS.forEach(t=>c[bucketOf(t)]++);
+  return c;
+}
+function renderTiles(){
+  const c = counts();
+  const activos = PROJECTS.filter(p=>p.e==="Activo").length;
+  const conCarga = PROJECTS.filter(p=>openCount(p.n)>0).length;
+  const tiles = [
+    {lab:"Tareas abiertas", dot:null,      val:TASKS.length, foot:c.sinfecha+" sin fecha asignada"},
+    {lab:"Vencidas",        dot:"var(--crit)", val:c.vencida,  foot:c.vencida?"la más vieja, "+oldest()+" días":"nada atrasado"},
+    {lab:"Vencen hoy",      dot:"var(--warn)", val:c.hoy,      foot:c.semana+" más en 7 días"},
+    {lab:"Proyectos activos",dot:"var(--s1)",  val:activos,    foot:conCarga+" con tareas abiertas"}
+  ];
+  document.getElementById("tiles").innerHTML = tiles.map(t=>`
+    <div class="tile">
+      <div class="lab">${t.dot?`<span class="dotc" style="background:${t.dot}"></span>`:""}${t.lab}</div>
+      <div class="val">${t.val}</div>
+      <div class="foot">${t.foot}</div>
+    </div>`).join("");
+}
+function oldest(){
+  let mx = 0;
+  TASKS.forEach(t=>{ const di=taskDayIndex(t); if(di!==null){ const d = todayIndex()-di; if(d>mx) mx=d; }});
+  return mx;
+}
+
+// ---------- render: tareas ----------
+let activeFilter = "todas";
+const FILTERS = [
+  {k:"todas",   l:"Todas"},
+  {k:"vencida", l:"Vencidas"},
+  {k:"hoy",     l:"Hoy"},
+  {k:"semana",  l:"Próx. 7 días"},
+  {k:"sinfecha",l:"Sin fecha"}
+];
+function renderFilters(){
+  const c = counts();
+  document.getElementById("filters").innerHTML = FILTERS.map(f=>{
+    const n = f.k==="todas" ? TASKS.length : c[f.k];
+    return `<button class="fbtn" type="button" data-k="${f.k}" aria-pressed="${activeFilter===f.k}">${f.l}<span class="n">${n}</span></button>`;
+  }).join("");
+  document.querySelectorAll("#filters .fbtn").forEach(b=>{
+    b.addEventListener("click",()=>{ activeFilter=b.dataset.k; renderFilters(); renderTasks(); });
+  });
+}
+const ORDER = {vencida:0, hoy:1, semana:2, despues:3, sinfecha:4};
+function renderTasks(){
+  const list = TASKS
+    .filter(t=> activeFilter==="todas" || bucketOf(t)===activeFilter)
+    .sort((a,b)=>{
+      const oa=ORDER[bucketOf(a)], ob=ORDER[bucketOf(b)];
+      if(oa!==ob) return oa-ob;
+      const da=taskDayIndex(a), db=taskDayIndex(b);
+      if(da!==null && db!==null) return da-db;
+      return 0;
+    });
+  const el = document.getElementById("taskList");
+  if(!list.length){ el.innerHTML = `<li class="empty">Nada en este filtro.</li>`; return; }
+  el.innerHTML = list.map(t=>{
+    const w = whenLabel(t), b = bucketOf(t);
+    const chips = [
+      t.proj ? `<span class="chip">${t.proj}</span>` : `<span class="chip" style="color:var(--muted)">sin proyecto</span>`,
+      t.c ? `<span class="chip">${t.c}</span>` : "",
+      t.p ? `<span class="chip">${PRIOLAB[t.p]}</span>` : ""
+    ].filter(Boolean).join("");
+    const who = t.w.length ? `<span class="who">${t.w.join(", ")}</span>` : "";
+    return `<li class="task">
+      <span class="bar" style="background:${BARCOLOR[b]}"></span>
+      <span>
+        <a class="t-title" href="${t.u}" target="_blank" rel="noopener">${t.t}</a>
+        <span class="t-meta">${chips}${who}</span>
+      </span>
+      <span class="t-when ${w.cls}"><b>${w.top}</b>${w.bot}</span>
+    </li>`;
+  }).join("");
+}
+
+// ---------- render: proyectos ----------
+function openCount(name){ return TASKS.filter(t=>t.proj===name).length; }
+function renderProjects(){
+  const rows = PROJECTS.map(p=>({...p, n_open:openCount(p.n)}))
+                       .sort((a,b)=> b.n_open-a.n_open || a.n.localeCompare(b.n));
+  const sinProy = TASKS.filter(t=>!t.proj).length;
+  const max = Math.max(...rows.map(r=>r.n_open), sinProy, 1);
+
+  const chartRows = rows.filter(r=>r.n_open>0)
+    .concat(sinProy? [{n:"(sin proyecto)", n_open:sinProy, other:true}] : []);
+  document.getElementById("chart").innerHTML = chartRows.map(r=>`
+    <div class="row" title="${r.n}: ${r.n_open} tarea${r.n_open===1?"":"s"} abierta${r.n_open===1?"":"s"}">
+      <span class="name">${r.n}</span>
+      <span class="track"><span class="fill" style="width:${(r.n_open/max*100).toFixed(1)}%;background:${r.other?"var(--axis)":"var(--seq-450)"}"></span></span>
+      <span class="num">${r.n_open}</span>
+    </div>`).join("");
+
+  const estadoColor = {"Activo":"var(--good)","Futuro":"var(--s1)","En Pausa":"var(--muted)","EN ESPERA":"var(--warn)"};
+  document.getElementById("projBody").innerHTML = rows.map(p=>{
+    let entrega = '<span style="color:var(--muted)">—</span>';
+    if(p.d){
+      const di = Math.floor(Date.UTC(...p.d.split("-").map((v,i)=>i===1?+v-1:+v))/86400000);
+      const delta = di - todayIndex();
+      const txt = fmtDay.format(new Date(p.d+"T12:00:00Z"));
+      entrega = delta<0
+        ? `<span class="st-crit num">${txt} · ${-delta} d tarde</span>`
+        : `<span class="num" style="color:var(--ink2)">${txt}</span>`;
+    }
+    return `<tr>
+      <td><a href="${p.u}" target="_blank" rel="noopener">${p.n}</a></td>
+      <td><span class="badge"><span class="dotc" style="background:${estadoColor[p.e]||"var(--axis)"}"></span>${p.e}</span></td>
+      <td class="num" style="text-align:right">${p.n_open||'<span style="color:var(--muted)">0</span>'}</td>
+      <td>${entrega}</td>
+    </tr>`;
+  }).join("");
+}
+
+// ---------- reloj + refresco ----------
+function tick(){
+  const now = new Date();
+  document.getElementById("clock").textContent =
+    new Intl.DateTimeFormat("es-MX",{timeZone:TZ,hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:false}).format(now);
+  document.getElementById("today").textContent =
+    new Intl.DateTimeFormat("es-MX",{timeZone:TZ,weekday:"long",day:"numeric",month:"long"}).format(now);
+}
+function renderStamp(){
+  const s = new Date(SYNC_ISO);
+  const mins = Math.floor((Date.now()-s.getTime())/60000);
+  const rel = mins<60 ? `hace ${mins} min` : (mins<1440 ? `hace ${Math.floor(mins/60)} h` : `hace ${Math.floor(mins/1440)} d`);
+  const txt = `Notion · sincronizado ${fmtDay.format(s)} ${fmtTime.format(s)} (CDMX) · ${rel}`;
+  document.getElementById("syncline").textContent = txt;
+  document.getElementById("stamp").textContent =
+    `Instantánea de Notion: ${TASKS.length} tareas abiertas y ${PROJECTS.length} proyectos vivos, leídos ${rel}. Todo lo demás se calcula en vivo.`;
+}
+let lastDay = todayIndex();
+function refresh(){
+  renderTiles(); renderFilters(); renderTasks(); renderProjects(); renderStamp();
+}
+setInterval(tick, 1000);
+setInterval(()=>{
+  renderStamp();
+  if(todayIndex()!==lastDay){ lastDay=todayIndex(); refresh(); }  // cruzó la medianoche → rebucketiza
+  else { renderTiles(); renderTasks(); }
+}, 60000);
+
+// ---------- tema ----------
+const btn = document.getElementById("themeBtn");
+btn.addEventListener("click",()=>{
+  const dark = document.documentElement.getAttribute("data-theme")==="dark";
+  document.documentElement.setAttribute("data-theme", dark?"light":"dark");
+  btn.textContent = dark ? "Modo oscuro" : "Modo claro";
+});
+if(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches){
+  document.documentElement.setAttribute("data-theme","dark");
+  btn.textContent = "Modo claro";
+}
+
+tick(); refresh();
+</script>
+</body>
+</html>
