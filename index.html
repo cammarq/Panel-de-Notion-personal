@@ -182,8 +182,21 @@
 </div>
 
 <script>
-// datos leídos de Notion el 2026-10-13T00:08:46Z (UTC)
+// datos leídos de Notion el 2026-10-13T07:21:30Z (UTC)
 const TASKS = [
+ {
+  "t": "Limpiar nube de puntos del C",
+  "s": "Urgente - No Importante",
+  "p": "alta",
+  "c": "ROCA",
+  "w": [
+   "Alfredo"
+  ],
+  "d": "2026-10-13T16:00:00.000-06:00",
+  "dt": true,
+  "proj": "HPDS",
+  "u": "https://app.notion.com/p/Limpiar-nube-de-puntos-del-C-3f80c7c9511880968b5dce14027de954"
+ },
  {
   "t": "Mural Eva Bracamontes listo",
   "s": "Importante - No urgente",
@@ -195,7 +208,7 @@ const TASKS = [
   ],
   "d": null,
   "dt": false,
-  "proj": "CUM",
+  "proj": null,
   "u": "https://app.notion.com/p/Mural-Eva-Bracamontes-listo-3f70c7c951188036b597c5bf324921e9"
  },
  {
@@ -274,12 +287,14 @@ const TASKS = [
  },
  {
   "t": "Y hacer renders para el equipo de cómo quedaría",
-  "s": "Urgente - No Importante",
-  "p": null,
-  "c": null,
-  "w": [],
-  "d": null,
-  "dt": false,
+  "s": "Urgente - Importante",
+  "p": "alta",
+  "c": "ROCA",
+  "w": [
+   "Edgar"
+  ],
+  "d": "2026-10-13T15:00:00.000-06:00",
+  "dt": true,
   "proj": "CUM",
   "u": "https://app.notion.com/p/Y-hacer-renders-para-el-equipo-de-c-mo-quedar-a-3e60c7c95118800787b8de3263150437"
  },
@@ -447,19 +462,6 @@ const TASKS = [
   "dt": true,
   "proj": "CAMMARQ",
   "u": "https://app.notion.com/p/Falta-pago-de-Geolog-a-3d10c7c95118803781e2e10d74ad4011"
- },
- {
-  "t": "¿Cómo va el pago de mantenimiento?",
-  "s": "Urgente - No Importante",
-  "p": "media",
-  "c": "ROCA",
-  "w": [
-   "Edgar"
-  ],
-  "d": "2026-10-14T08:17:00.000-06:00",
-  "dt": true,
-  "proj": "CUM",
-  "u": "https://app.notion.com/p/C-mo-va-el-pago-de-mantenimiento-3cd0c7c95118802a94d6f2f2cc151960"
  },
  {
   "t": "Falta que paguen lo del J",
@@ -761,7 +763,7 @@ const PROJECTS = [
  }
 ];
 
-const SYNC_ISO = "2026-10-13T00:08:46Z";
+const SYNC_ISO = "2026-10-13T07:21:30Z";
 const TZ = "America/Mexico_City";
 
 // ---------- helpers de fecha, todos anclados a la hora local de CDMX ----------
